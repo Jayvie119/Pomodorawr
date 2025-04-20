@@ -1,41 +1,47 @@
-const timerDisplay = document.getElementById('timer');
-const startBtn = document.getElementById('startBtn');
-const pauseBtn = document.getElementById('pauseBtn');
-const resetVtn = document.getElementById('resetBtn');
+const start = document.getElementById("start");
+const stop = document.getElementById("stop");
+const reset = document.getElementById("reset");
+const timer = document.getElementById("timer");
 
-let countdown;
-let timeLeft = 25 * 60;
-let isRunning = false;
+let timeLeft = 1500;
+let interval;
 
-function formatTime(seconds) {
-    const minutes = Math.floor(seconds/60);
-    const secs = seconds % 60;
-    return `${minutes < 10 ? '0' + minutes : minutes}:${secs < 10 ? '0' + secs :secs}`;
-}
+const updateTimer = ()=> {
+    const minutes = Math.floor(timeLeft/60);
+    const seconds = timeLeft % 60;
 
-function startTimer() {
-    if (isRunning) return;
-    isRunning = true;
+    timer.innerHTML = 
+    `${minutes.toString().padStart(2,"0")}
+    :
+    ${seconds.toString().padStart(2,"0")}`;
+};
 
-    countdown = setInterval(() => {
+const startTimer = ()=> {
+    if (interval){
+        clearInterval(interval);
+    }
+
+    interval = setInterval(() => {
         timeLeft--;
-        timerDisplay.textContent = formatTime(timeLeft);
-
-        if (timeLeft <= 0) {
-            clearInterval(countdown);
-            isRunning = false;
-            alert("Pomodoro session complete! Take a break.");
+        updateTimer()
+        
+        if(timeLeft == 0){
+            clearInterval(interval);
+            alert("Time's up!");
+            timeLeft = 1500;
+            updateTimer();
         }
-    }, 1000);
+    },
+     1000)
 }
 
-function pauseTimer() {
-    clearInterval(countdown);
-    isRunning = false;
-    timeLeft = 25 * 60;
-    timerDisplay.textContent = formatTime(timeLeft);
+const  stopTimer = ()=> clearInterval(interval);
+const resetTimer = ()=> {
+    clearInterval(interval);
+    timeLeft = 1500;
+    updateTimer();
 }
 
-startBtn.addEventListener('click', startTimer);
-pauseBtn.addEventListener('click', pauseTimer);
-resetBtn.addEventListener('click', resetTimer);
+start.addEventListener("click", startTimer);
+stop.addEventListener("click", stopTimer);
+reset.addEventListener("click", resetTimer);
